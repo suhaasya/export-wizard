@@ -43,23 +43,29 @@ func ExportExcel(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	// You can now iterate over the data and access the keys/values dynamically
-	singleItem := data[0]
-
-	idx := 0
-	for key := range singleItem {
-		f.SetCellValue("Sheet1", string(rune(66+idx))+"2", key)
-		idx++
+	// Set headers
+	headers := make([]string, 0, len(data[0]))
+	for key := range data[0] {
+		headers = append(headers, key)
 	}
 
-	for i, item := range data {
-		idx := 0
-		for _, value := range item {
-			f.SetCellValue("Sheet1", string(rune(66+idx))+""+fmt.Sprint(3+i), value)
-			idx++
+	// Write headers
+	for i, header := range headers {
+		col := string(rune('A' + i))
+		cell := col + "1"
+		f.SetCellValue("Sheet1", cell, header)
+		f.SetColWidth("Sheet1", col, col, 40) // Set column width to 20
+	}
+
+	// Write data rows
+	for rowIndex, item := range data {
+		for colIndex, header := range headers {
+			col := string(rune('A' + colIndex))
+			cell := col + fmt.Sprint(rowIndex+2)
+			value := item[header]
+			f.SetCellValue("Sheet1", cell, value)
 		}
 	}
-
 	// Save spreadsheet by the given path.
 	if err := f.SaveAs("Book1.xlsx"); err != nil {
 		fmt.Println(err)
