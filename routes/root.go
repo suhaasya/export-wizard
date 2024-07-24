@@ -7,6 +7,7 @@ import (
 
 func RootRoutes(r *mux.Router) {
 	protectedR := r.NewRoute().Subrouter()
-	protectedR.HandleFunc("/", controllers.ExportPdf).Methods("GET")
+	protectedR.HandleFunc("/pdf", controllers.ExportPdf).Methods("POST")
 	protectedR.HandleFunc("/excel", controllers.ExportExcel).Methods("POST")
+	protectedR.HandleFunc("/csv", controllers.ExportCSV).Methods("POST")
 }
